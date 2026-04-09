@@ -417,7 +417,7 @@ class NeuroPulseAIFastPlotter(QtWidgets.QMainWindow):
                 border: 1px solid #00E5FF;
                 color: #A0B4D0;
                 font-family: 'Segoe UI';
-                font-size: 12px;
+                font-size: 14px;
             }
             QPushButton#analystBtn {
                 background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #00E5FF, stop:1 #0072FF);
@@ -719,7 +719,7 @@ class NeuroPulseAIFastPlotter(QtWidgets.QMainWindow):
         status = "CONTRACTION DETECTED" if is_active else "RELAXED STATE"
         color = "#00FF85" if is_active else "#8CA0BB"
         
-        report = f"<br><b style='color:{color};'>STATUS: {status}</b><br><br>"
+        report = f"<br><b style='color:{color}; font-size: 18px;'>STATUS: {status}</b><br><br>"
         
         if audience == "General User":
             if is_active:
@@ -739,7 +739,7 @@ class NeuroPulseAIFastPlotter(QtWidgets.QMainWindow):
             else:
                 msg = "Neural drive is absent. Baseline recording shows stable tonicity at resting potential."
         
-        self.analysis_output.setHtml(report + f"<span style='color:#DDE6F2;'>{msg}</span>")
+        self.analysis_output.setHtml(report + f"<div style='color:#DDE6F2; font-size: 15px; line-height: 1.5;'>{msg}</div>")
 
 
 if __name__ == "__main__":
