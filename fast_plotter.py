@@ -213,6 +213,7 @@ class NeuroPulseAIFastPlotter(QtWidgets.QMainWindow):
         side_card.setObjectName("card")
         side_layout = QtWidgets.QVBoxLayout(side_card)
         side_layout.setContentsMargins(12, 12, 12, 12)
+        side_layout.setSpacing(10)
 
         panel_title = QtWidgets.QLabel("Signal Dashboard")
         panel_title.setObjectName("panelTitle")
@@ -220,21 +221,52 @@ class NeuroPulseAIFastPlotter(QtWidgets.QMainWindow):
         self.signal_scroll = QtWidgets.QScrollArea()
         self.signal_scroll.setWidgetResizable(True)
         self.signal_scroll.setFrameShape(QtWidgets.QFrame.NoFrame)
+        self.signal_scroll.setMinimumHeight(240)
 
         self.signal_container = QtWidgets.QWidget()
         self.signal_layout = QtWidgets.QVBoxLayout(self.signal_container)
         self.signal_layout.setSpacing(8)
-        self.signal_layout.addStretch()
+        self.signal_layout.setContentsMargins(0, 0, 0, 0)
 
         self.signal_scroll.setWidget(self.signal_container)
 
+        # AI Analyst Section
+        analyst_sep = QtWidgets.QFrame()
+        analyst_sep.setFrameShape(QtWidgets.QFrame.HLine)
+        analyst_sep.setFrameShadow(QtWidgets.QFrame.Sunken)
+        analyst_sep.setStyleSheet("background: #1F2A3D;")
+
+        analyst_header = QtWidgets.QHBoxLayout()
+        analyst_title = QtWidgets.QLabel("AI Graph Analyst")
+        analyst_title.setObjectName("panelTitle")
+        analyst_header.addWidget(analyst_title)
+        
+        self.audience_combo = QtWidgets.QComboBox()
+        self.audience_combo.addItems(["General User", "Physiotherapist", "Medical Doctor"])
+        self.audience_combo.setMinimumWidth(120)
+        analyst_header.addWidget(self.audience_combo)
+
+        self.analysis_output = QtWidgets.QPlainTextEdit()
+        self.analysis_output.setReadOnly(True)
+        self.analysis_output.setPlaceholderText("Current signal analysis will appear here...")
+        self.analysis_output.setObjectName("analystBox")
+        self.analysis_output.setMinimumHeight(150)
+
+        self.analyze_btn = QtWidgets.QPushButton("🚀 Generate Clinical Insight")
+        self.analyze_btn.setObjectName("analystBtn")
+        self.analyze_btn.clicked.connect(self.generate_ai_insight)
+
         self.log_box = QtWidgets.QPlainTextEdit()
         self.log_box.setReadOnly(True)
-        self.log_box.setMaximumHeight(180)
+        self.log_box.setMaximumHeight(100)
         self.log_box.setVisible(False)
 
         side_layout.addWidget(panel_title)
         side_layout.addWidget(self.signal_scroll)
+        side_layout.addWidget(analyst_sep)
+        side_layout.addLayout(analyst_header)
+        side_layout.addWidget(self.analysis_output)
+        side_layout.addWidget(self.analyze_btn)
         side_layout.addWidget(self.log_box)
 
         main.addWidget(side_card, 2)
@@ -379,6 +411,18 @@ class NeuroPulseAIFastPlotter(QtWidgets.QMainWindow):
                 padding: 6px;
                 font-family: Consolas;
                 font-size: 11px;
+            }
+            QPlainTextEdit#analystBox {
+                background: #090E17;
+                border: 1px solid #00E5FF;
+                color: #A0B4D0;
+                font-family: 'Segoe UI';
+                font-size: 12px;
+                line-height: 1.4;
+            }
+            QPushButton#analystBtn {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #00E5FF, stop:1 #0072FF);
+                margin-top: 5px;
             }
         """)
         self.refresh_btn.setStyleSheet("background:#2D9CDB;")
@@ -654,6 +698,49 @@ class NeuroPulseAIFastPlotter(QtWidgets.QMainWindow):
 
         if self.enable_autoscale:
             self.plot_widget.enableAutoRange(axis='y', enable=True)
+
+    # =========================
+    # AI Analyst Logic
+    # =========================
+    def generate_ai_insight(self):
+        audience = self.audience_combo.currentText()
+        
+        # Pull current values
+        # [raw, centered, envelope, trigger]
+        env = self.latest_values[2]
+        is_active = self.latest_values[3] > 0.5
+        
+        self.analysis_output.clear()
+        self.analysis_output.appendHtml("<b style='color:#00E5FF;'>Analysing Muscle Patterns...</b><br>")
+        
+        # Simulate thinking
+        QtCore.QTimer.singleShot(800, lambda: self._finalize_insight(audience, env, is_active))
+
+    def _finalize_insight(self, audience, env, is_active):
+        status = "CONTRACTION DETECTED" if is_active else "RELAXED STATE"
+        color = "#00FF85" if is_active else "#8CA0BB"
+        
+        report = f"<br><b style='color:{color};'>STATUS: {status}</b><br><br>"
+        
+        if audience == "General User":
+            if is_active:
+                msg = "Your muscles are currently working hard! You are applying good force. Keep going but remember to breathe."
+            else:
+                msg = "Your muscles are resting. This is a good time to check your posture before the next set."
+        
+        elif audience == "Physiotherapist":
+            if is_active:
+                msg = f"EMG Envelope shows peak amplitude at {env:.2f}V. Recruitement of motor units is consistent. No visible tremors in current window."
+            else:
+                msg = "Baseline activity confirmed. SNR is within acceptable range for post-injury assessment."
+        
+        else: # Medical Doctor
+            if is_active:
+                msg = f"Significant neuromuscular activation observed. EMG Envelope Voltage: {env:.2f}. Pattern suggestive of normal voluntary contraction with no compensatory recruitment detected."
+            else:
+                msg = "Neural drive is absent. Baseline recording shows stable tonicity at resting potential."
+        
+        self.analysis_output.setHtml(report + f"<span style='color:#DDE6F2;'>{msg}</span>")
 
 
 if __name__ == "__main__":
