@@ -246,7 +246,7 @@ class NeuroPulseAIFastPlotter(QtWidgets.QMainWindow):
         self.audience_combo.setMinimumWidth(120)
         analyst_header.addWidget(self.audience_combo)
 
-        self.analysis_output = QtWidgets.QPlainTextEdit()
+        self.analysis_output = QtWidgets.QTextEdit()
         self.analysis_output.setReadOnly(True)
         self.analysis_output.setPlaceholderText("Current signal analysis will appear here...")
         self.analysis_output.setObjectName("analystBox")
@@ -403,7 +403,7 @@ class NeuroPulseAIFastPlotter(QtWidgets.QMainWindow):
                 background: #00C2FF;
                 border: 1px solid #00C2FF;
             }
-            QPlainTextEdit {
+            QPlainTextEdit, QTextEdit {
                 background: #0D1421;
                 color: #DCE7F5;
                 border: 1px solid #223149;
@@ -412,13 +412,12 @@ class NeuroPulseAIFastPlotter(QtWidgets.QMainWindow):
                 font-family: Consolas;
                 font-size: 11px;
             }
-            QPlainTextEdit#analystBox {
+            QTextEdit#analystBox {
                 background: #090E17;
                 border: 1px solid #00E5FF;
                 color: #A0B4D0;
                 font-family: 'Segoe UI';
                 font-size: 12px;
-                line-height: 1.4;
             }
             QPushButton#analystBtn {
                 background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #00E5FF, stop:1 #0072FF);
@@ -711,7 +710,7 @@ class NeuroPulseAIFastPlotter(QtWidgets.QMainWindow):
         is_active = self.latest_values[3] > 0.5
         
         self.analysis_output.clear()
-        self.analysis_output.appendHtml("<b style='color:#00E5FF;'>Analysing Muscle Patterns...</b><br>")
+        self.analysis_output.setHtml("<b style='color:#00E5FF;'>Analysing Muscle Patterns...</b><br>")
         
         # Simulate thinking
         QtCore.QTimer.singleShot(800, lambda: self._finalize_insight(audience, env, is_active))
