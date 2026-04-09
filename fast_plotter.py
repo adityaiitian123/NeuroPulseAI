@@ -541,10 +541,16 @@ class NeuroPulseAIFastPlotter(QtWidgets.QMainWindow):
         current = self.port_combo.currentText()
         self.port_combo.clear()
 
-        for port in serial.tools.list_ports.comports():
-            self.port_combo.addItem(port.device)
+        ports = [port.device for port in serial.tools.list_ports.comports()]
+        for p in ports:
+            self.port_combo.addItem(p)
 
-        if current:
+        # Priority Selection: 1st preference to COM10
+        target = "COM10"
+        if target in ports:
+            idx = self.port_combo.findText(target)
+            self.port_combo.setCurrentIndex(idx)
+        elif current:
             idx = self.port_combo.findText(current)
             if idx >= 0:
                 self.port_combo.setCurrentIndex(idx)
