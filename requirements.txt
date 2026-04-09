@@ -1,0 +1,9 @@
+numpy
+pandas
+pyserial
+streamlit
+reportlab
+streamlit-echarts
+groq
+PyQt5
+pyqtgraph
